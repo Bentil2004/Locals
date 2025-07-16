@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   getStartedText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
   },
 });
