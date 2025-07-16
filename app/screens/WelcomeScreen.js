@@ -34,7 +34,7 @@ export default function WelcomeScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.signupButton}
-          onPress={() => navigation.navigate('SignUpScreen')}
+          onPress={() => navigation.navigate('RoleSelectionScreen')}
         >
           <Text style={styles.signupText}>Create Account</Text>
         </TouchableOpacity>
