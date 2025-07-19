@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -9,19 +9,25 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { Checkbox } from 'react-native-paper';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { Checkbox } from "react-native-paper";
 
 export default function SignUpScreen() {
   const navigation = useNavigation();
   const [isChecked, setIsChecked] = React.useState(false);
+  const [phone, setPhone] = React.useState("");
+
+  const handlePhoneChange = (text) => {
+    const cleaned = text.replace(/\D/g, "");
+    setPhone(cleaned);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
         <ScrollView
@@ -47,6 +53,19 @@ export default function SignUpScreen() {
                   placeholder="ex: jon smith"
                   placeholderTextColor="#A0A0A0"
                   style={styles.input}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Phone</Text>
+                <TextInput
+                  placeholder="ex: 0244777344"
+                  placeholderTextColor="#A0A0A0"
+                  style={styles.input}
+                  keyboardType="phone-pad"
+                  value={phone}
+                  onChangeText={handlePhoneChange}
+                  maxLength={10}
                 />
               </View>
 
@@ -83,17 +102,19 @@ export default function SignUpScreen() {
             </View>
 
             <View style={styles.checkboxContainer}>
-        <View style={styles.checkboxBorder}>
-          <Checkbox
-            status={isChecked ? 'checked' : 'unchecked'}
-            onPress={() => setIsChecked(!isChecked)}
-            color="#159D73"
-            uncheckedColor="#159D73"
-            style={styles.checkbox}
-          />
-        </View>
-        <Text style={styles.checkboxText}>I understood the terms & policy.</Text>
-      </View>
+              <View style={styles.checkboxBorder}>
+                <Checkbox
+                  status={isChecked ? "checked" : "unchecked"}
+                  onPress={() => setIsChecked(!isChecked)}
+                  color="#159D73"
+                  uncheckedColor="#159D73"
+                  style={styles.checkbox}
+                />
+              </View>
+              <Text style={styles.checkboxText}>
+                I understood the terms & policy.
+              </Text>
+            </View>
 
             <TouchableOpacity
               style={[styles.signUpButton, !isChecked && styles.disabledButton]}
@@ -104,7 +125,9 @@ export default function SignUpScreen() {
 
             <View style={styles.signInPrompt}>
               <Text style={styles.promptText}>Have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('LogInScreen')}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("LogInScreen")}
+              >
                 <Text style={styles.signInText}>Sign In</Text>
               </TouchableOpacity>
             </View>
@@ -118,15 +141,15 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: "#F9F9F9",
   },
   scrollContainer: {
     flexGrow: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 24,
     paddingTop: 16,
     marginBottom: 10,
@@ -136,14 +159,14 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 6,
     borderWidth: 1.5,
-    borderColor: '#159D73',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "#159D73",
+    justifyContent: "center",
+    alignItems: "center",
   },
   logoText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#159D73',
+    fontWeight: "bold",
+    color: "#159D73",
   },
   content: {
     flex: 1,
@@ -152,10 +175,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 30,
-    color: '#000',
-    textAlign: 'center',
+    color: "#000",
+    textAlign: "center",
   },
   formContainer: {
     marginBottom: 10,
@@ -165,31 +188,31 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 15,
-    color: '#444',
+    color: "#444",
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
     paddingHorizontal: 15,
     paddingVertical: 14,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
   },
   checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 25,
   },
   checkboxBorder: {
     borderWidth: 1,
-    borderColor: '#159D73',
+    borderColor: "#159D73",
     borderRadius: 4,
     width: 22,
     height: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 10,
   },
   checkbox: {
@@ -200,36 +223,36 @@ const styles = StyleSheet.create({
   },
   checkboxText: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
   },
   signUpButton: {
-    backgroundColor: '#159D73',
+    backgroundColor: "#159D73",
     paddingVertical: 16,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 25,
   },
   disabledButton: {
-    backgroundColor: '#CCCCCC',
+    backgroundColor: "#CCCCCC",
   },
   signUpText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     letterSpacing: 0.5,
   },
   signInPrompt: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginBottom: 30,
   },
   promptText: {
-    color: '#999',
+    color: "#999",
     fontSize: 14,
   },
   signInText: {
-    color: '#159D73',
+    color: "#159D73",
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });

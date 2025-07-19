@@ -43,3 +43,30 @@ const styles = StyleSheet.create({
 });
 
 export default SplashScreen;
+
+
+// import React, { useEffect } from 'react';
+// import { Image, View, Text } from 'react-native';
+
+// const SplashScreen = ({ navigation }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(() => {
+//       navigation.navigate('LandingScreen'); 
+//     }, 3000);
+
+//     return () => clearTimeout(timer);
+//   }, [navigation]);
+
+//   return (
+//     <View className="flex-1 justify-center items-center bg-white">
+//       <Image
+//         source={require('../assets/Splash.png')}
+//         className="w-1/5 h-1/10"
+//         resizeMode="contain"
+//       />
+//       <Text className="text-2xl font-bold text-black mt-5">Locals</Text>
+//     </View>
+//   );
+// };
+
+// export default SplashScreen;
