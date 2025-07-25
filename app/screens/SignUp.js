@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,20 +9,63 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Checkbox } from "react-native-paper";
+import { auth, db } from "../../firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
-export default function SignUpScreen({route}) {
-  const {role} = route.params
+export default function SignUpScreen({ route }) {
+  const { role } = route.params;
   const navigation = useNavigation();
-  const [isChecked, setIsChecked] = React.useState(false);
-  const [phone, setPhone] = React.useState("");
+
+  const [isChecked, setIsChecked] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handlePhoneChange = (text) => {
     const cleaned = text.replace(/\D/g, "");
     setPhone(cleaned);
+  };
+
+  const handleSignUp = async () => {
+    if (!name || !phone || !email || !password || !confirmPassword) {
+      Alert.alert("Error", "Please fill all fields");
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        name,
+        phone,
+        email,
+        role,
+        createdAt: new Date().toISOString(),
+      });
+
+      Alert.alert("Success", "Account created successfully!");
+      navigation.navigate("LogInScreen", {role});
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", error.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -54,6 +97,8 @@ export default function SignUpScreen({route}) {
                   placeholder="ex: jon smith"
                   placeholderTextColor="#A0A0A0"
                   style={styles.input}
+                  value={name}
+                  onChangeText={setName}
                 />
               </View>
 
@@ -70,18 +115,16 @@ export default function SignUpScreen({route}) {
                 />
               </View>
 
-              {role == "provider" && <View style={styles.inputGroup}>
-                <Text style={styles.label}>For provider only</Text>
-                <TextInput
-                  placeholder="For provider only"
-                  placeholderTextColor="#A0A0A0"
-                  style={styles.input}
-                  keyboardType="phone-pad"
-                  value={phone}
-                  onChangeText={handlePhoneChange}
-                  maxLength={10}
-                />
-              </View>}
+              {role === "provider" && (
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>For provider only</Text>
+                  <TextInput
+                    placeholder="For provider only"
+                    placeholderTextColor="#A0A0A0"
+                    style={styles.input}
+                  />
+                </View>
+              )}
 
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Email</Text>
@@ -91,6 +134,8 @@ export default function SignUpScreen({route}) {
                   style={styles.input}
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  value={email}
+                  onChangeText={setEmail}
                 />
               </View>
 
@@ -101,6 +146,8 @@ export default function SignUpScreen({route}) {
                   placeholderTextColor="#A0A0A0"
                   secureTextEntry
                   style={styles.input}
+                  value={password}
+                  onChangeText={setPassword}
                 />
               </View>
 
@@ -111,6 +158,8 @@ export default function SignUpScreen({route}) {
                   placeholderTextColor="#A0A0A0"
                   secureTextEntry
                   style={styles.input}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
                 />
               </View>
             </View>
@@ -131,10 +180,13 @@ export default function SignUpScreen({route}) {
             </View>
 
             <TouchableOpacity
-              style={[styles.signUpButton, !isChecked && styles.disabledButton]}
-              disabled={!isChecked}
+              style={[styles.signUpButton, (!isChecked || loading) && styles.disabledButton]}
+              disabled={!isChecked || loading}
+              onPress={handleSignUp}
             >
-              <Text style={styles.signUpText}>SIGN UP</Text>
+              <Text style={styles.signUpText}>
+                {loading ? "Signing Up..." : "Sign Up"}
+              </Text>
             </TouchableOpacity>
 
             <View style={styles.signInPrompt}>

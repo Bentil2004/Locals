@@ -8,22 +8,23 @@ import {
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useUserDetails } from "../../hooks/useUserDetails";
 
 export default function HomeScreen() {
+  const { user, profile, loading, logout } = useUserDetails();
   return (
     <View style={styles.container}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.welcomeText}>Hello, Bentil Fiifi</Text>
-            <Text style={styles.welcomeSubtext}>Welcome Back!</Text>
-          </View>
-          <Image
-            source={{ uri: "https://i.pravatar.cc/150?img=12" }}
-            style={styles.profileImage}
-          />
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.welcomeText}>Hello, {profile?.name}</Text>
+          <Text style={styles.welcomeSubtext}>Welcome Back!</Text>
         </View>
+        <Image
+          source={{ uri: "https://i.pravatar.cc/150?img=12" }}
+          style={styles.profileImage}
+        />
+      </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-
         <View style={styles.locationContainer}>
           <View style={styles.locationHeader}>
             <Ionicons name="location-outline" size={20} color="#159D73" />
@@ -78,7 +79,6 @@ export default function HomeScreen() {
               service: "Electrician",
               image: "https://i.pravatar.cc/150?img=44",
             },
-
           ].map((provider, index) => (
             <View key={index} style={styles.providerCard}>
               <Image source={{ uri: provider.image }} style={styles.avatar} />
@@ -103,13 +103,13 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: "#F9F9F9"
-   },
+  container: {
+    flex: 1,
+    backgroundColor: "#F9F9F9",
+  },
   scrollContainer: {
-     paddingBottom: 100 
-    },
+    paddingBottom: 100,
+  },
   header: {
     backgroundColor: "#159D73",
     borderBottomRightRadius: 50,
@@ -117,22 +117,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 130
+    height: 130,
   },
-  welcomeText: { 
+  welcomeText: {
     fontSize: 24,
-     fontWeight: "bold", 
-     color: "#fff" 
-    },
-  welcomeSubtext: { 
-    fontSize: 18, 
-    color: "#f0f0f0"
-   },
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  welcomeSubtext: {
+    fontSize: 18,
+    color: "#f0f0f0",
+  },
   profileImage: {
-     width: 50, 
-     height: 50, 
-     borderRadius: 25 
-    },
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
   locationContainer: {
     backgroundColor: "#fff",
     margin: 20,
@@ -142,16 +142,16 @@ const styles = StyleSheet.create({
     borderColor: "#E0E0E0",
   },
   locationHeader: {
-     flexDirection: "row", 
-  alignItems: "center",
-   marginBottom: 5 
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
   },
   locationText: {
-     fontSize: 16, 
-     fontWeight: "600", 
-     marginLeft: 5, 
-     color: "#444" 
-    },
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 5,
+    color: "#444",
+  },
   addressText: { fontSize: 14, color: "#666", marginBottom: 10 },
   changeButton: { alignSelf: "flex-end" },
   changeText: { color: "#0496FF", fontWeight: "500" },
@@ -164,7 +164,11 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { fontSize: 18, fontWeight: "600", color: "#000" },
   seeAllText: { color: "#0496FF", fontWeight: "500" },
-  categoriesContainer: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
+  categoriesContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
   categoryItem: {
     width: "30%",
     backgroundColor: "#fff",

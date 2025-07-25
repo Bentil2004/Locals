@@ -10,10 +10,14 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import { useUserDetails } from "../../hooks/useUserDetails";
 
 const ProviderProfileScreen = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(false);
+
+  const { user, profile, loading, logout } = useUserDetails();
+  // console.log("user details", user, profile, loading);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,7 +36,7 @@ const ProviderProfileScreen = () => {
               <Feather name="edit-2" size={18} color="#fff" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.profileName}>Fiifi Bentil</Text>
+          <Text style={styles.profileName}>{profile?.name}</Text>
         </View>
 
         <View style={styles.contactCard}>
@@ -41,7 +45,7 @@ const ProviderProfileScreen = () => {
 
             <View style={styles.contactRow}>
               <Ionicons name="call-outline" size={20} color="#333" style={styles.icon} />
-              <Text style={styles.contactText}>+233 587 239 475</Text>
+              <Text style={styles.contactText}>{profile?.phone}</Text>
             </View>
 
             <View style={styles.contactRow}>
@@ -93,7 +97,7 @@ const ProviderProfileScreen = () => {
           <Text style={styles.linkText}>Help and Support</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity onPress={logout} style={styles.logoutButton}>
           <Ionicons name="log-out-outline" size={20} color="#FF3B30" />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>

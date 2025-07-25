@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,21 +9,42 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebaseConfig';
 
 export default function LogInScreen({ route }) {
   const navigation = useNavigation();
-  const { role } = route.params; 
+  const { role } = route.params;
 
-  const handleLogin = () => {
-    // Login Logic will be going here...after so I will use Firebase auth
-    if (role === 'jobSeeker') {
-      navigation.navigate('BottomTabNavigator');
-    } else {
-      navigation.navigate('ProviderBottomTabs');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields.');
+      return;
     }
+
+    setLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log('User logged in:', user);
+      if (role === 'jobSeeker') {
+        navigation.navigate('BottomTabNavigator');
+      } else {
+        navigation.navigate('ProviderBottomTabs');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Login Failed', error.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -32,10 +53,7 @@ export default function LogInScreen({ route }) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View style={styles.content}>
             <View style={styles.header}>
               <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -45,12 +63,10 @@ export default function LogInScreen({ route }) {
                 <Text style={styles.logoText}>L</Text>
               </View>
             </View>
-            
+
             <View style={styles.formContainer}>
               <Text style={styles.title}>
-                {role === 'jobSeeker' 
-                  ? 'Job Seeker Login' 
-                  : 'Service Provider Login'}
+                {role === 'jobSeeker' ? 'Job Seeker Login' : 'Service Provider Login'}
               </Text>
 
               <View style={styles.inputContainer}>
@@ -61,6 +77,8 @@ export default function LogInScreen({ route }) {
                   style={styles.input}
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  value={email}
+                  onChangeText={setEmail}
                 />
 
                 <Text style={styles.label}>Password</Text>
@@ -69,21 +87,22 @@ export default function LogInScreen({ route }) {
                   placeholderTextColor="#A0A0A0"
                   secureTextEntry
                   style={styles.input}
+                  value={password}
+                  onChangeText={setPassword}
                 />
               </View>
 
-              <TouchableOpacity 
-                style={styles.signInButton} 
+              <TouchableOpacity
+                style={[styles.signInButton, loading && { opacity: 0.6 }]}
                 onPress={handleLogin}
+                disabled={loading}
               >
-                <Text style={styles.signInText}>Sign In</Text>
+                <Text style={styles.signInText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
               </TouchableOpacity>
 
               <View style={styles.signupPrompt}>
                 <Text style={styles.promptText}>Don't have an account? </Text>
-                <TouchableOpacity 
-                  onPress={() => navigation.navigate('SignUp', { role })}
-                >
+                <TouchableOpacity onPress={() => navigation.navigate('SignUp', { role })}>
                   <Text style={styles.signupText}>Sign Up</Text>
                 </TouchableOpacity>
               </View>
