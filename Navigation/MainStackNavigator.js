@@ -9,11 +9,7 @@ import LogInScreen from "../app/screens/LogInScreen";
 import RoleSelectionScreen from "../app/screens/RoleSelectionScreen";
 import JobSeekerSignUp from "../app/screens/JobSeekerSignUp";
 import BottomTabNavigator from "./BottomTabNavigator";
-import HomeScreen from "../app/screens/HomeScreen";
-import SearchScreen from "../app/screens/SearchScreen";
-import BookingScreen from "../app/screens/BookingScreen";
-import ProfileScreen from "../app/screens/ProfileScreen";
-import ChatScreen from "../app/screens/ChatScreen";
+import ChatScreen from "../app/screens/client/ChatScreen";
 import ProviderBottomTabs from "./ProviderBottomTabs";
 
 const Stack = createNativeStackNavigator();
@@ -23,16 +19,12 @@ const MainStackNavigator = () => {
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="SplashScreen" component={SplashScreen} />    
-            <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />  
             <Stack.Screen name="LandingScreen" component={LandingScreen} />    
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />  
             <Stack.Screen name="LogInScreen" component={LogInScreen} />  
             <Stack.Screen name="RoleSelectionScreen" component={RoleSelectionScreen} /> 
-            <Stack.Screen name="JobSeekerSignUp" component={JobSeekerSignUp} /> 
-            <Stack.Screen name="HomeScreen" component={HomeScreen} />      
-            <Stack.Screen name="SearchScreen" component={SearchScreen} />  
-            <Stack.Screen name="BookingScreen" component={BookingScreen} /> 
-            <Stack.Screen name="ProfileScreen" component={ProfileScreen} />    
+            <Stack.Screen name="JobSeekerSignUp" component={JobSeekerSignUp} />   
+            <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />  
             <Stack.Screen name="ChatScreen" component={ChatScreen} /> 
             <Stack.Screen name="ProviderBottomTabs" component={ProviderBottomTabs} />   
                    
