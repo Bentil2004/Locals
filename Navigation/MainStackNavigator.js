@@ -15,7 +15,6 @@ import BookingScreen from "../app/screens/BookingScreen";
 import ProfileScreen from "../app/screens/ProfileScreen";
 import ChatScreen from "../app/screens/ChatScreen"
 
-
 const Stack = createNativeStackNavigator();
 
 const MainStackNavigator = () => {
