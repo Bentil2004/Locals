@@ -18,7 +18,7 @@ export default function RoleSelectionScreen() {
     if (action === "login") {
       navigation.navigate("LogInScreen", { role });
     } else {
-      navigation.navigate(role === "jobSeeker" ? "JobSeekerSignUp" : "ServiceProviderSignUp");
+      navigation.navigate("SignUp", {role});
     }
   };
 

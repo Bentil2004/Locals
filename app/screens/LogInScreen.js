@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function LogInScreen({ route }) {
   const navigation = useNavigation();
-  const { role } = route.params || { role: 'jobSeeker' }; 
+  const { role } = route.params; 
 
   const handleLogin = () => {
     // Login Logic will be going here...after so I will use Firebase auth
@@ -82,7 +82,7 @@ export default function LogInScreen({ route }) {
               <View style={styles.signupPrompt}>
                 <Text style={styles.promptText}>Don't have an account? </Text>
                 <TouchableOpacity 
-                  onPress={() => navigation.navigate('RoleSelectionScreen', { action: 'signup' })}
+                  onPress={() => navigation.navigate('SignUp', { role })}
                 >
                   <Text style={styles.signupText}>Sign Up</Text>
                 </TouchableOpacity>

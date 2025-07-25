@@ -14,7 +14,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Checkbox } from "react-native-paper";
 
-export default function SignUpScreen() {
+export default function SignUpScreen({route}) {
+  const {role} = route.params
   const navigation = useNavigation();
   const [isChecked, setIsChecked] = React.useState(false);
   const [phone, setPhone] = React.useState("");
@@ -68,6 +69,19 @@ export default function SignUpScreen() {
                   maxLength={10}
                 />
               </View>
+
+              {role == "provider" && <View style={styles.inputGroup}>
+                <Text style={styles.label}>For provider only</Text>
+                <TextInput
+                  placeholder="For provider only"
+                  placeholderTextColor="#A0A0A0"
+                  style={styles.input}
+                  keyboardType="phone-pad"
+                  value={phone}
+                  onChangeText={handlePhoneChange}
+                  maxLength={10}
+                />
+              </View>}
 
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Email</Text>

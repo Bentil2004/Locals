@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 
-const ProfileScreen = () => {
+const ProviderProfileScreen = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(false);
 
@@ -59,7 +59,7 @@ const ProfileScreen = () => {
 
         <Text style={styles.sectionTitle}>App Settings</Text>
 
-        <View style={styles.settingItem}>
+        {/* <View style={styles.settingItem}>
           <View style={styles.settingLeft}>
             <Ionicons name="moon-outline" size={22} color="#000" />
             <Text style={styles.settingText}>Dark mode</Text>
@@ -69,7 +69,7 @@ const ProfileScreen = () => {
             onValueChange={() => setDarkMode(!darkMode)}
             trackColor={{ false: "#ccc", true: "#159D73" }}
           />
-        </View>
+        </View> */}
 
         <View style={styles.settingItem}>
           <View style={styles.settingLeft}>
@@ -102,7 +102,7 @@ const ProfileScreen = () => {
   );
 };
 
-export default ProfileScreen;
+export default ProviderProfileScreen;
 
 const styles = StyleSheet.create({
   container: {
