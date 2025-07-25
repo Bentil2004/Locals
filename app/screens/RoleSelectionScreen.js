@@ -6,11 +6,21 @@ import {
   StyleSheet,
   SafeAreaView,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 export default function RoleSelectionScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { action } = route.params || { action: "signup" }; 
+
+  const handleRoleSelection = (role) => {
+    if (action === "login") {
+      navigation.navigate("LogInScreen", { role });
+    } else {
+      navigation.navigate(role === "jobSeeker" ? "JobSeekerSignUp" : "ServiceProviderSignUp");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,30 +34,46 @@ export default function RoleSelectionScreen() {
           </View>
         </View>
 
-        <Text style={styles.title}>Please choose your role</Text>
+        <Text style={styles.title}>
+          {action === "login" ? "Log in as" : "Sign up as"}
+        </Text>
 
         <TouchableOpacity
           style={styles.card}
-          onPress={() => navigation.navigate("JobSeekerSignUp")}
+          onPress={() => handleRoleSelection("jobSeeker")}
         >
           <View style={styles.cardContent}>
             <Ionicons name="person-outline" size={24} color="#159D73" style={styles.icon} />
             <View style={styles.textContainer}>
-              <Text style={styles.cardTitle}>I need someone for a job</Text>
-              <Text style={styles.cardSubtitle}>Get Help Close to You</Text>
+              <Text style={styles.cardTitle}>
+                {action === "login" ? "Log in as Job Seeker" : "I need someone for a job"}
+              </Text>
+              <Text style={styles.cardSubtitle}>
+                {action === "login"
+                  ? "Access your job seeker account"
+                  : "Get Help Close to You"}
+              </Text>
             </View>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.card}
-          onPress={() => navigation.navigate("ServiceProviderSignUp")}
+          onPress={() => handleRoleSelection("provider")}
         >
           <View style={styles.cardContent}>
             <MaterialIcons name="work-outline" size={24} color="#159D73" style={styles.icon} />
             <View style={styles.textContainer}>
-              <Text style={styles.cardTitle}>I provide services</Text>
-              <Text style={styles.cardSubtitle}>Connect with clients near you</Text>
+              <Text style={styles.cardTitle}>
+                {action === "login"
+                  ? "Log in as Service Provider"
+                  : "I provide services"}
+              </Text>
+              <Text style={styles.cardSubtitle}>
+                {action === "login"
+                  ? "Access your provider account"
+                  : "Connect with clients near you"}
+              </Text>
             </View>
           </View>
         </TouchableOpacity>

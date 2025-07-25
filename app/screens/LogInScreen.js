@@ -13,8 +13,18 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-export default function LogInScreen() {
+export default function LogInScreen({ route }) {
   const navigation = useNavigation();
+  const { role } = route.params || { role: 'jobSeeker' }; 
+
+  const handleLogin = () => {
+    // Login Logic will be going here...after so I will use Firebase auth
+    if (role === 'jobSeeker') {
+      navigation.navigate('BottomTabNavigator');
+    } else {
+      navigation.navigate('ProviderBottomTabs');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,8 +45,13 @@ export default function LogInScreen() {
                 <Text style={styles.logoText}>L</Text>
               </View>
             </View>
+            
             <View style={styles.formContainer}>
-              <Text style={styles.title}>Sign in your account</Text>
+              <Text style={styles.title}>
+                {role === 'jobSeeker' 
+                  ? 'Job Seeker Login' 
+                  : 'Service Provider Login'}
+              </Text>
 
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Email</Text>
@@ -57,13 +72,18 @@ export default function LogInScreen() {
                 />
               </View>
 
-              <TouchableOpacity style={styles.signInButton} onPress={() => navigation.navigate('BottomTabNavigator')}>
+              <TouchableOpacity 
+                style={styles.signInButton} 
+                onPress={handleLogin}
+              >
                 <Text style={styles.signInText}>Sign In</Text>
               </TouchableOpacity>
 
               <View style={styles.signupPrompt}>
                 <Text style={styles.promptText}>Don't have an account? </Text>
-                <TouchableOpacity onPress={() => navigation.navigate('RoleSelectionScreen')}>
+                <TouchableOpacity 
+                  onPress={() => navigation.navigate('RoleSelectionScreen', { action: 'signup' })}
+                >
                   <Text style={styles.signupText}>Sign Up</Text>
                 </TouchableOpacity>
               </View>

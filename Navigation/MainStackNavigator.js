@@ -13,7 +13,8 @@ import HomeScreen from "../app/screens/HomeScreen";
 import SearchScreen from "../app/screens/SearchScreen";
 import BookingScreen from "../app/screens/BookingScreen";
 import ProfileScreen from "../app/screens/ProfileScreen";
-import ChatScreen from "../app/screens/ChatScreen"
+import ChatScreen from "../app/screens/ChatScreen";
+import ProviderBottomTabs from "./ProviderBottomTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +33,8 @@ const MainStackNavigator = () => {
             <Stack.Screen name="SearchScreen" component={SearchScreen} />  
             <Stack.Screen name="BookingScreen" component={BookingScreen} /> 
             <Stack.Screen name="ProfileScreen" component={ProfileScreen} />    
-            <Stack.Screen name="ChatScreen" component={ChatScreen} />  
+            <Stack.Screen name="ChatScreen" component={ChatScreen} /> 
+            <Stack.Screen name="ProviderBottomTabs" component={ProviderBottomTabs} />   
                    
           </Stack.Navigator>
         </NavigationContainer>

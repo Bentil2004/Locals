@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity,SafeAreaView } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 
 export default function WelcomeScreen({ navigation }) {
@@ -27,14 +27,14 @@ export default function WelcomeScreen({ navigation }) {
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => navigation.navigate('LogInScreen')}
+          onPress={() => navigation.navigate('RoleSelectionScreen', { action: 'login' })}
         >
           <Text style={styles.loginText}>Log In</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.signupButton}
-          onPress={() => navigation.navigate('RoleSelectionScreen')}
+          onPress={() => navigation.navigate('RoleSelectionScreen', { action: 'signup' })}
         >
           <Text style={styles.signupText}>Create Account</Text>
         </TouchableOpacity>
@@ -42,6 +42,7 @@ export default function WelcomeScreen({ navigation }) {
     </ImageBackground>
   );
 }
+
 
 const styles = StyleSheet.create({
   background: {
