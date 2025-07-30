@@ -16,7 +16,7 @@ const SplashScreen = ({ navigation }) => {
             const role = docSnap.data().role;
             if (role === "jobSeeker") {
               navigation.reset({ index: 0, routes: [{ name: "BottomTabNavigator" }] });
-            } else {
+            } else if (role === "provider") {
               navigation.reset({ index: 0, routes: [{ name: "ProviderBottomTabs" }] });
             }
           } else {
@@ -43,7 +43,7 @@ const SplashScreen = ({ navigation }) => {
         resizeMode="contain"
       />
       <Text style={styles.subtext}>Locals</Text>
-      <ActivityIndicator size="large" color="#159D73" style={{ marginTop: 20 }} />
+      <ActivityIndicator size="medium" color="#159D73" style={{ marginTop: 20 }} />
     </View>
   );
 };

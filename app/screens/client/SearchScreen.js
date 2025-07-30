@@ -2,15 +2,17 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Image 
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useUserDetails } from "../../hooks/useUserDetails";
 
 const SearchScreen = () => {
   const navigation = useNavigation();
+  const { user, profile, loading, logout } = useUserDetails();
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.welcomeText}>Hello, Bentil Fiifi</Text>
+          <Text style={styles.welcomeText}>Hello, {profile?.name}</Text>
           <Text style={styles.welcomeSubtext}>Welcome Back!</Text>
         </View>
         <Image

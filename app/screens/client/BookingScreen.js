@@ -13,6 +13,8 @@ import {
   Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useUserDetails } from "../../hooks/useUserDetails";
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +25,7 @@ const BookingScreen = ({ route }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [notes, setNotes] = useState('');
+  const { user, profile, loading, logout } = useUserDetails();
   const [providerData, setProviderData] = useState({
     name: 'Provider Name',
     service: 'Service',
@@ -94,7 +97,7 @@ const BookingScreen = ({ route }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.welcomeText}>Hello, Bentil Fiifi</Text>
+          <Text style={styles.welcomeText}>Hello, {profile?.name}</Text>
           <Text style={styles.welcomeSubtext}>Welcome Back!</Text>
         </View>
         <Image
