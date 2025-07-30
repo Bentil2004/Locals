@@ -11,13 +11,27 @@ import {
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useUserDetails } from "../../hooks/useUserDetails";
+import { useNavigation } from "@react-navigation/native";
 
 const ProviderProfileScreen = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(false);
+  const navigation = useNavigation();
 
   const { user, profile, loading, logout } = useUserDetails();
-  // console.log("user details", user, profile, loading);
+  console.log("user details", user, profile, loading);
+
+const onLogoutPress = () => {
+  console.log("Logout pressed");
+  logout()
+    .then(() => {
+      console.log("User logged out successfully");
+      navigation.navigate("RoleSelectionScreen", {action: "login"});
+    })
+    .catch((error) => {
+      console.error("Logout failed:", error);
+    });
+}
 
   return (
     <SafeAreaView style={styles.container}>
@@ -97,7 +111,7 @@ const ProviderProfileScreen = () => {
           <Text style={styles.linkText}>Help and Support</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={logout} style={styles.logoutButton}>
+        <TouchableOpacity  style={styles.logoutButton} onPress={onLogoutPress}>
           <Ionicons name="log-out-outline" size={20} color="#FF3B30" />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>

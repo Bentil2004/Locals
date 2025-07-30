@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
+import { Feather } from '@expo/vector-icons';
 
 export default function LogInScreen({ route }) {
   const navigation = useNavigation();
@@ -23,6 +24,7 @@ export default function LogInScreen({ route }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -46,6 +48,10 @@ export default function LogInScreen({ route }) {
     }
     setLoading(false);
   };
+
+  const onForgotPressed = () => {
+    navigation.navigate('ForgotPassword', { role });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -82,14 +88,28 @@ export default function LogInScreen({ route }) {
                 />
 
                 <Text style={styles.label}>Password</Text>
+                <View style={styles.inputWrapper}>
                 <TextInput
                   placeholder="*********"
                   placeholderTextColor="#A0A0A0"
-                  secureTextEntry
-                  style={styles.input}
+                  secureTextEntry={!passwordVisible}
+                  style={styles.inputPassword}
                   value={password}
                   onChangeText={setPassword}
                 />
+                <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.eyeicon}>
+                  <Feather
+                    name={passwordVisible ? "eye" : "eye-off"}
+                    size={20}
+                    color="#A0A0A0"
+                  />
+                </TouchableOpacity>
+              </View>
+                <TouchableOpacity onPress={onForgotPressed}>
+                  <Text style={{ color: '#159D73', fontSize: 14, textAlign: 'right' }}>
+                    Forgot Password?
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               <TouchableOpacity
@@ -175,6 +195,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E0E0E0',
   },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 15,
+    marginBottom: 20,
+  },
+  
+  inputPassword: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+    color: '#333',
+  },
+  
+  eyeIcon: {
+    marginLeft: 10,
+  },  
   signInButton: {
     backgroundColor: '#159D73',
     paddingVertical: 16,

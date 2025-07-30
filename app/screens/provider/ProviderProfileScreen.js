@@ -10,10 +10,27 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useUserDetails } from "../../hooks/useUserDetails";
 
 const ProviderProfileScreen = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(false);
+  const { user, profile, loading, logout } = useUserDetails();
+  console.log("user details", user, profile, loading);
+  const navigation = useNavigation();
+
+  const onLogoutPress = () => {
+    console.log("Logout pressed");
+    logout()
+      .then(() => {
+        console.log("User logged out successfully");
+        navigation.navigate("RoleSelectionScreen", { action: "login" });
+      })
+      .catch((error) => {
+        console.error("Logout failed:", error);
+      });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -115,7 +132,7 @@ const ProviderProfileScreen = () => {
           <Text style={styles.linkText}>Help and Support</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={onLogoutPress}>
           <Ionicons name="log-out-outline" size={20} color="#FF3B30" />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
@@ -249,6 +266,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     marginHorizontal: 20,
+    marginBottom: 24,
   },
   logoutText: {
     color: "#FF3B30",
