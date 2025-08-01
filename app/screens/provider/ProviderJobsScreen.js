@@ -50,7 +50,7 @@ const ProviderJobsScreen = () => {
         <View style={styles.profileRow}>
           <Image source={require('../../assets/new.jpeg')} style={styles.profilePic} />
           <View style={{ marginLeft: 10 }}>
-            <Text style={styles.name}>Bentil Fiifi</Text>
+            <Text style={styles.name}>{profile?.name}</Text>
             <Text style={styles.role}>Plumber, San Francisco</Text>
             <Text style={styles.rating}>4.8 (123 reviews)</Text>
           </View>
@@ -85,7 +85,6 @@ const ProviderJobsScreen = () => {
         </View>
       </View>
 
-      {/* Pending Request */}
       <Text style={styles.sectionTitle}>Pending Request</Text>
       <View style={styles.requestCard}>
         <View style={styles.cardHeader}>
@@ -115,7 +114,6 @@ const ProviderJobsScreen = () => {
         </View>
       </View>
 
-      {/* Today's Schedule */}
       <Text style={styles.sectionTitle}>Today’s Schedule</Text>
       <View style={styles.confirmedCard}>
         <Text style={styles.dateText}>Today, June 15</Text>
@@ -138,7 +136,6 @@ const ProviderJobsScreen = () => {
         </View>
       </View>
 
-      {/* Upcoming Jobs */}
       <Text style={styles.sectionTitle}>Upcoming Jobs</Text>
       {upcomingJobs.map((job) => (
         <View key={job.id} style={styles.requestCard}>
