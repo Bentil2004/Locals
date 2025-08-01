@@ -41,18 +41,18 @@ export default function ProviderHomeScreen() {
       distance: "1.2km",
       image: "https://i.pravatar.cc/150?img=2",
     },
-    {
-      id: 3,
-      title: "Recyclable Pickup",
-      location: "Airport Residential, Accra",
-      date: "2025-08-10",
-      time: "09:15 AM",
-      binSize: "Small",
-      frequency: "Monthly",
-      clientName: "Kwame Boateng",
-      distance: "2.5km",
-      image: "https://i.pravatar.cc/150?img=3",
-    },
+    // {
+    //   id: 3,
+    //   title: "Recyclable Pickup",
+    //   location: "Airport Residential, Accra",
+    //   date: "2025-08-10",
+    //   time: "09:15 AM",
+    //   binSize: "Small",
+    //   frequency: "Monthly",
+    //   clientName: "Kwame Boateng",
+    //   distance: "2.5km",
+    //   image: "https://i.pravatar.cc/150?img=3",
+    // },
   ];
   
   
