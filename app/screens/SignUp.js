@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { Checkbox } from "react-native-paper";
 import { auth, db } from "../../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -21,6 +20,7 @@ import { doc, setDoc } from "firebase/firestore";
 export default function SignUpScreen({ route }) {
   const { role } = route.params;
   const navigation = useNavigation();
+  const [checked, setChecked] = useState(false);
 
   const [isChecked, setIsChecked] = useState(false);
   const [phone, setPhone] = useState("");
@@ -67,6 +67,10 @@ export default function SignUpScreen({ route }) {
     }
     setLoading(false);
   };
+
+  const onTermsPressed = () => {
+    Alert.alert("Terms & Policy", "Please read and accept the terms and policy.");
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -117,9 +121,9 @@ export default function SignUpScreen({ route }) {
 
               {role === "provider" && (
                 <View style={styles.inputGroup}>
-                  <Text style={styles.label}>For provider only</Text>
+                  <Text style={styles.label}>Residential Address</Text>
                   <TextInput
-                    placeholder="For provider only"
+                    placeholder="ex: 123 Main St, City, Country"
                     placeholderTextColor="#A0A0A0"
                     style={styles.input}
                   />
@@ -164,20 +168,23 @@ export default function SignUpScreen({ route }) {
               </View>
             </View>
 
-            <View style={styles.checkboxContainer}>
-              <View style={styles.checkboxBorder}>
-                <Checkbox
-                  status={isChecked ? "checked" : "unchecked"}
-                  onPress={() => setIsChecked(!isChecked)}
-                  color="#159D73"
-                  uncheckedColor="#159D73"
-                  style={styles.checkbox}
+            <View style={styles.termsCheck}>
+              <TouchableOpacity
+                style={styles.checkbox}
+                onPress={() => setIsChecked(prev => !prev)}
+              >
+                <Ionicons
+                  name={checked ? "checkmark-circle" : "checkmark-circle-outline"}
+                  size={25}
+                  color={isChecked ? "#159D73" : "#999"}
                 />
-              </View>
-              <Text style={styles.checkboxText}>
-                I understood the terms & policy.
-              </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => console.log("Terms clicked")}>
+                <Text style={styles.labelterms}>I understood the terms & policy.</Text>
+              </TouchableOpacity>
             </View>
+
 
             <TouchableOpacity
               style={[styles.signUpButton, (!isChecked || loading) && styles.disabledButton]}
@@ -192,7 +199,7 @@ export default function SignUpScreen({ route }) {
             <View style={styles.signInPrompt}>
               <Text style={styles.promptText}>Have an account? </Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate("LogInScreen")}
+                onPress={() => navigation.navigate('LogInScreen', { role })}
               >
                 <Text style={styles.signInText}>Sign In</Text>
               </TouchableOpacity>
@@ -263,33 +270,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 14,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
   },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 25,
-  },
-  checkboxBorder: {
-    borderWidth: 1,
-    borderColor: "#159D73",
-    borderRadius: 4,
-    width: 22,
-    height: 22,
+    marginVertical: 10,
     justifyContent: "center",
-    alignItems: "center",
+  },
+    checkbox: {
     marginRight: 10,
   },
-  checkbox: {
-    margin: 0,
-    padding: 0,
-    width: 20,
-    height: 20,
-  },
-  checkboxText: {
-    fontSize: 14,
-    color: "#666",
+  label: {
+    fontSize: 16,
+    color: "#444",
+    marginBottom: 10,
+
   },
   signUpButton: {
     backgroundColor: "#159D73",
@@ -320,5 +315,14 @@ const styles = StyleSheet.create({
     color: "#159D73",
     fontSize: 14,
     fontWeight: "500",
+  },
+  termsCheck: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  labelterms: {
+    fontSize: 16,
+    color: "#444",
   },
 });

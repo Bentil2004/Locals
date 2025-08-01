@@ -8,30 +8,45 @@ import {
   Switch,
   SafeAreaView,
   ScrollView,
+  Modal,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useUserDetails } from "../../hooks/useUserDetails";
 import { useNavigation } from "@react-navigation/native";
 
-const ProviderProfileScreen = () => {
+const ProfileScreen = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigation = useNavigation();
 
   const { user, profile, loading, logout } = useUserDetails();
   console.log("user details", user, profile, loading);
 
-const onLogoutPress = () => {
-  console.log("Logout pressed");
+// const onLogoutPress = () => {
+//   console.log("Logout pressed");
+//   logout()
+//     .then(() => {
+//       console.log("User logged out successfully");
+//       navigation.navigate("RoleSelectionScreen", {action: "login"});
+//     })
+//     .catch((error) => {
+//       console.error("Logout failed:", error);
+//     });
+// }
+
+const confirmLogout = () => {
   logout()
     .then(() => {
       console.log("User logged out successfully");
-      navigation.navigate("RoleSelectionScreen", {action: "login"});
+      setShowLogoutModal(false);
+      navigation.navigate("RoleSelectionScreen", { action: "login" });
     })
     .catch((error) => {
       console.error("Logout failed:", error);
     });
-}
+};
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -64,7 +79,7 @@ const onLogoutPress = () => {
 
             <View style={styles.contactRow}>
               <Ionicons name="location-outline" size={20} color="#333" style={styles.icon} />
-              <Text style={styles.contactText}>Accra, Nima</Text>
+              <Text style={styles.contactText}>{profile?.location}</Text>
             </View>
           </View>
 
@@ -111,16 +126,46 @@ const onLogoutPress = () => {
           <Text style={styles.linkText}>Help and Support</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity  style={styles.logoutButton} onPress={onLogoutPress}>
+        <TouchableOpacity  style={styles.logoutButton} onPress={() => setShowLogoutModal(true)}>
           <Ionicons name="log-out-outline" size={20} color="#FF3B30" />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
+        <Modal
+          transparent={true}
+          visible={showLogoutModal}
+          animationType="fade"
+          onRequestClose={() => setShowLogoutModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Confirm Logout</Text>
+              <Text style={styles.modalMessage}>Are you sure you want to logout?</Text>
+              
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: "#FF3B30" }]}
+                  onPress={confirmLogout}
+                >
+                  <Text style={styles.modalButtonText}>Logout</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: "#ccc" }]}
+                  onPress={() => setShowLogoutModal(false)}
+                >
+                  <Text style={[styles.modalButtonText, { color: "#000" }]}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
       </ScrollView>
     </SafeAreaView>
+
   );
 };
 
-export default ProviderProfileScreen;
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -251,4 +296,44 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 25,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 14,
+    color: "#333",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  
 });
