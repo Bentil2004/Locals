@@ -26,11 +26,18 @@ const BookingScreen = ({ route }) => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [notes, setNotes] = useState('');
   const { user, profile, loading, logout } = useUserDetails();
+  const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
   const [providerData, setProviderData] = useState({
     name: 'Provider Name',
     service: 'Service',
     image: { uri: 'https://i.pravatar.cc/150?img=3' }
   });
+
+  useEffect(() => {
+    if (profile?.avatar) {
+      setProfileImage(profile.avatar);
+    }
+  }, [profile?.avatar]);
 
   useEffect(() => {
     if (route.params) {
@@ -101,7 +108,7 @@ const BookingScreen = ({ route }) => {
           <Text style={styles.welcomeSubtext}>Welcome Back!</Text>
         </View>
         <Image
-          source={{ uri: "https://i.pravatar.cc/150?img=12" }}
+          source={{ uri: profileImage}}
           style={styles.profileImage}
         />
       </View>
@@ -291,7 +298,9 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 50, 
     height: 50, 
-    borderRadius: 25 
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: "#fff"
   },
   sectionTitle: {
     fontSize: 16,

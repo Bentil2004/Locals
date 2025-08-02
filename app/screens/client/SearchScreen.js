@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +8,13 @@ import { useUserDetails } from "../../hooks/useUserDetails";
 const SearchScreen = () => {
   const navigation = useNavigation();
   const { user, profile, loading, logout } = useUserDetails();
+  const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
+
+  useEffect(() => {
+    if (profile?.avatar) {
+      setProfileImage(profile.avatar);
+    }
+  }, [profile?.avatar]);
 
   return (
     <View style={styles.container}>
@@ -16,7 +24,7 @@ const SearchScreen = () => {
           <Text style={styles.welcomeSubtext}>Welcome Back!</Text>
         </View>
         <Image
-          source={{ uri: "https://i.pravatar.cc/150?img=12" }}
+          source={{ uri: profileImage}}
           style={styles.profileImage}
         />
       </View>
@@ -161,7 +169,9 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 50, 
     height: 50, 
-    borderRadius: 25 
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: "#fff",
   },
   searchContainer: {
     flexDirection: 'row',

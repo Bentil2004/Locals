@@ -16,7 +16,8 @@ const SplashScreen = ({ navigation }) => {
             const role = docSnap.data().role;
             if (role === "jobSeeker") {
               navigation.reset({ index: 0, routes: [{ name: "BottomTabNavigator" }] });
-            } else if (role === "provider") {
+            } else if (role === "provider") 
+{
               navigation.reset({ index: 0, routes: [{ name: "ProviderBottomTabs" }] });
             }
           } else {

@@ -27,9 +27,10 @@ export const UserProvider = ({ children }) => {
       }
       setLoading(false);
     });
-
+     
+    
     return unsubscribe;
-  }, []);
+  }, [profile]);
 
   const logout = async () => {
     await signOut(auth);

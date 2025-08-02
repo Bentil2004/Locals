@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,6 +13,14 @@ import { useUserDetails } from "../../hooks/useUserDetails";
 
 export default function HomeScreen() {
   const { user, profile, loading, logout } = useUserDetails();
+  const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
+
+  useEffect(() => {
+    if (profile?.avatar) {
+      setProfileImage(profile.avatar);
+    }
+  }, [profile]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -19,10 +28,7 @@ export default function HomeScreen() {
           <Text style={styles.welcomeText}>Hello, {profile?.name}</Text>
           <Text style={styles.welcomeSubtext}>Welcome Back!</Text>
         </View>
-        <Image
-          source={{ uri: "https://i.pravatar.cc/150?img=12" }}
-          style={styles.profileImage}
-        />
+        <Image source={{ uri: profileImage }} style={styles.profileImage} />
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.locationContainer}>
@@ -132,6 +138,8 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+    borderWidth: 2,
+    borderColor: "#fff",
   },
   locationContainer: {
     backgroundColor: "#fff",

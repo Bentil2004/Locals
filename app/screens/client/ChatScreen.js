@@ -1,4 +1,5 @@
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
+import { useState,useEffect } from 'react';
 import { Ionicons, MaterialIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
@@ -7,6 +8,7 @@ const ChatScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { providerName, providerService, providerImage } = route.params;
+  
 
   return (
     <KeyboardAvoidingView
