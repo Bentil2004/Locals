@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -54,6 +55,14 @@ export default function ProviderHomeScreen() {
     //   image: "https://i.pravatar.cc/150?img=3",
     // },
   ];
+
+  const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
+
+  useEffect(() => {
+    if (profile?.avatar) {
+      setProfileImage(profile.avatar);
+    }
+  }, [profile]);
   
   
 
@@ -70,7 +79,7 @@ export default function ProviderHomeScreen() {
           <Text style={styles.welcome}>Welcome Back!</Text>
         </View>
         <Image
-          source={{ uri: 'https://i.pravatar.cc/100' }}
+          source={{ uri: profileImage}}
           style={styles.profileImage}
         />
       </View>

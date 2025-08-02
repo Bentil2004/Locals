@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState , useEffect} from 'react';
 import {
   View,
   Text,
@@ -34,6 +34,15 @@ const ProviderMessagesScreen = () => {
   const navigation = useNavigation();
   const { profile } = useUserDetails();
 
+
+  const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
+
+  useEffect(() => {
+    if (profile?.avatar) {
+      setProfileImage(profile.avatar);
+    }
+  }, [profile]);
+
   const handlePress = (item) => {
     navigation.navigate('ChatScreen', { user: item });
   };
@@ -59,7 +68,7 @@ const ProviderMessagesScreen = () => {
           <Text style={styles.welcome}>Welcome Back!</Text>
         </View>
         <Image
-          source={{ uri: 'https://i.pravatar.cc/100' }}
+          source={{ uri: profileImage }}
           style={styles.profileImage}
         />
       </View>

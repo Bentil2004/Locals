@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import {
   View,
   Text,
@@ -8,19 +8,102 @@ import {
   Switch,
   SafeAreaView,
   ScrollView,
-  Modal
+  Modal,
+  Alert,
+  ActivityIndicator
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useUserDetails } from "../../hooks/useUserDetails";
+import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
+import { auth, db } from "../../../firebaseConfig";
+import { doc, updateDoc } from "firebase/firestore";
+
 
 const ProviderProfileScreen = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(false);
   const { user, profile, loading, logout } = useUserDetails();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  console.log("user details", user, profile, loading);
+  // console.log("user details", user, profile, loading);
   const navigation = useNavigation();
+  const [isUploading, setIsUploading] = useState(false);
+
+  const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
+
+  useEffect(() => {
+    if (profile?.avatar) {
+      setProfileImage(profile.avatar);
+    }
+  }, [profile?.avatar]);
+
+  const pickImageAndUpload = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission required', 'We need access to your photos to change your profile picture');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
+
+      if (result.canceled) {
+        console.log('User cancelled image picker');
+        return;
+      }
+
+      if (!result.assets || result.assets.length === 0) {
+        console.log('No image selected');
+        return;
+      }
+
+      const image = result.assets[0];
+      setIsUploading(true);
+
+      // Prepare form data for Cloudinary upload
+      const formData = new FormData();
+      formData.append("file", {
+        uri: image.uri,
+        type: image.type || "image/jpeg",
+        name: image.fileName || `upload_${Date.now()}.jpg`,
+      });
+      formData.append("upload_preset", "reactnative_upload");
+      formData.append("cloud_name", "dhbt9vo25");
+
+      // Upload to Cloudinary
+      const uploadResponse = await axios.post(
+        "https://api.cloudinary.com/v1_1/dhbt9vo25/image/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const imageUrl = uploadResponse.data.secure_url;
+      setProfileImage(imageUrl);
+
+      // Update Firestore with new image URL
+      const uid = auth.currentUser?.uid;
+      if (uid) {
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, { avatar: imageUrl });
+        Alert.alert("Success", "Profile picture updated successfully");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      Alert.alert("Error", "Failed to upload image. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // const onLogoutPress = () => {
   //   console.log("Logout pressed");
@@ -53,17 +136,22 @@ const ProviderProfileScreen = () => {
 
         <View style={styles.profileSection}>
           <View style={styles.profileImageWrapper}>
-            <Image
-              source={{
-                uri: "https://i.pravatar.cc/300",
-              }}
-              style={styles.profileImage}
-            />
-            <TouchableOpacity style={styles.editIcon}>
+            {isUploading ? (
+              <View style={[styles.profileImage, styles.loadingImage]}>
+                <ActivityIndicator size="medium" color="#007BFF" />
+              </View>
+            ) : (
+              <Image source={{ uri: profileImage }} style={styles.profileImage} />
+            )}
+            <TouchableOpacity
+              style={styles.editIcon}
+              onPress={pickImageAndUpload}
+              disabled={isUploading}
+            >
               <Feather name="edit-2" size={18} color="#fff" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.profileName}>Fiifi Bentil</Text>
+          <Text style={styles.profileName}>{profile?.name || "User"}</Text>
         </View>
 
 
@@ -209,6 +297,13 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    borderWidth: 5,
+    borderColor: "#159D73",
+  },
+  loadingImage: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
   },
   editIcon: {
     position: "absolute",

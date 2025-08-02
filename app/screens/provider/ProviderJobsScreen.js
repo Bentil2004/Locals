@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState , useEffect} from "react";
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, StatusBar} from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { useUserDetails } from "../../hooks/useUserDetails";
@@ -18,6 +18,14 @@ const upcomingJobs = [
 const ProviderJobsScreen = () => {
   const { user, profile, loading, logout } = useUserDetails();
   const navigation = useNavigation();
+  const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
+
+
+useEffect(() => {
+  if (profile?.avatar) {
+    setProfileImage(profile.avatar);
+  }
+}, [profile]);
 
   const messagePressed = () => {
     navigation.navigate("Messages");
@@ -32,7 +40,7 @@ const ProviderJobsScreen = () => {
           <Text style={styles.welcome}>Welcome Back!</Text>
         </View>
         <Image
-          source={{ uri: 'https://i.pravatar.cc/100' }}
+          source={{ uri: profileImage }}
           style={styles.profileImage}
         />
       </View>
