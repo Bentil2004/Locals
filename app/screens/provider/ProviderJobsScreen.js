@@ -1,17 +1,25 @@
-import React, { useState , useEffect} from "react";
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, StatusBar} from 'react-native';
-import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  StatusBar,
+} from "react-native";
+import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useUserDetails } from "../../hooks/useUserDetails";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 const upcomingJobs = [
   {
     id: 1,
-    name: 'Peter Dune',
-    title: 'Plumber, San Francisco',
-    time: '4:00 pm',
-    location: 'Ayeduase, 4.9km',
-    day: 'Tomorrow',
+    name: "Peter Dune",
+    title: "Plumber, San Francisco",
+    time: "4:00 pm",
+    location: "Ayeduase, 4.9km",
+    day: "Tomorrow",
   },
 ];
 
@@ -20,12 +28,11 @@ const ProviderJobsScreen = () => {
   const navigation = useNavigation();
   const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
 
-
-useEffect(() => {
-  if (profile?.avatar) {
-    setProfileImage(profile.avatar);
-  }
-}, [profile]);
+  useEffect(() => {
+    if (profile?.avatar) {
+      setProfileImage(profile.avatar);
+    }
+  }, [profile]);
 
   const messagePressed = () => {
     navigation.navigate("Messages");
@@ -36,17 +43,18 @@ useEffect(() => {
       <StatusBar barStyle="light-content" backgroundColor="#159D73" />
       <View style={styles.topHeader}>
         <View>
-          <Text style={styles.greeting}>Hello, {profile?.name}</Text>
-          <Text style={styles.welcome}>Welcome Back!</Text>
+          <Text style={styles.greeting}>Job Bookings</Text>
+          <Text style={styles.welcome}>Your recent bookings will appear here</Text>
         </View>
-        <Image
-          source={{ uri: profileImage }}
-          style={styles.profileImage}
-        />
+        <Image source={{ uri: profileImage }} style={styles.profileImage} />
       </View>
 
       <TouchableOpacity style={styles.manageButton} onPress={messagePressed}>
-        <Ionicons name="chatbubble-ellipses-outline" size={20} color="#159D73" />
+        <Ionicons
+          name="chatbubble-ellipses-outline"
+          size={20}
+          color="#159D73"
+        />
         <Text style={styles.manageText}>Manage Employers</Text>
         <View style={styles.notificationBadge}>
           <Text style={styles.badgeText}>1</Text>
@@ -54,120 +62,141 @@ useEffect(() => {
       </TouchableOpacity>
 
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 100 }}>
-      <View style={styles.profileCard}>
-        <View style={styles.profileRow}>
-          <Image source={require('../../assets/new.jpeg')} style={styles.profilePic} />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={styles.name}>{profile?.name}</Text>
-            <Text style={styles.role}>Plumber, San Francisco</Text>
-            <Text style={styles.rating}>4.8 (123 reviews)</Text>
-          </View>
-          <View style={styles.statusDot} />
-          <Text style={styles.onlineText}>online</Text>
-        </View>
-        <TouchableOpacity style={styles.editProfileBtn}>
-          <Text style={styles.editProfileText}>Edit Profile</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Ionicons name="checkmark-done" size={20} color="#333" />
-          <Text style={styles.statValue}>27</Text>
-          <Text style={styles.statLabel}>Completed Jobs</Text>
-        </View>
-        <View style={styles.statCard}>
-          <FontAwesome name="dollar" size={20} color="#333" />
-          <Text style={styles.statValue}>$1,240</Text>
-          <Text style={styles.statLabel}>This Month</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Ionicons name="star" size={20} color="#f9b500" />
-          <Text style={styles.statValue}>4.8</Text>
-          <Text style={styles.statLabel}>Ratings</Text>
-        </View>
-        <View style={styles.statCard}>
-          <MaterialIcons name="notifications-active" size={20} color="#00c851" />
-          <Text style={styles.statValue}>92%</Text>
-          <Text style={styles.statLabel}>Response Rate</Text>
-        </View>
-      </View>
-
-      <Text style={styles.sectionTitle}>Pending Request</Text>
-      <View style={styles.requestCard}>
-        <View style={styles.cardHeader}>
-          <Image source={require('../../assets/new.jpeg')} style={styles.profileThumb} />
-          <View>
-            <Text style={styles.jobName}>Micheal Randers</Text>
-            <Text style={styles.jobRole}>Plumber, Kotei</Text>
-          </View>
-        </View>
-        <View style={styles.timeRow}>
-          <Ionicons name="calendar-outline" size={16} color="#555" />
-          <Text style={styles.timeText}>Thu, Mar 16</Text>
-          <Ionicons name="time-outline" size={16} color="#555" style={{ marginLeft: 10 }} />
-          <Text style={styles.timeText}>4:00 pm</Text>
-        </View>
-        <View style={styles.timeRow}>
-          <Ionicons name="location-outline" size={16} color="#555" />
-          <Text style={styles.timeText}>Ayeduase, 4.9km</Text>
-        </View>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.acceptBtn}>
-            <Text style={styles.acceptText}>Accept</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.declineBtn}>
-            <Text style={styles.declineText}>Decline</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <Text style={styles.sectionTitle}>Today’s Schedule</Text>
-      <View style={styles.confirmedCard}>
-        <Text style={styles.dateText}>Today, June 15</Text>
-        <View style={styles.cardHeader}>
-          <Image source={require('../../assets/new.jpeg')} style={styles.profileThumb} />
-          <View>
-            <Text style={styles.jobName}>Nick John</Text>
-            <Text style={styles.jobRole}>Plumber, New Site</Text>
-          </View>
-        </View>
-        <View style={styles.timeRow}>
-          <Ionicons name="location-outline" size={16} color="#555" />
-          <Text style={styles.timeText}>Ayeduase, 4.9km</Text>
-        </View>
-        <View style={styles.confirmedRow}>
-          <Text style={styles.confirmedText}>• Confirmed</Text>
-          <TouchableOpacity>
-            <Text style={styles.viewDetails}>View Details</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <Text style={styles.sectionTitle}>Upcoming Jobs</Text>
-      {upcomingJobs.map((job) => (
-        <View key={job.id} style={styles.requestCard}>
-          <View style={styles.cardHeader}>
-            <Image source={require('../../assets/new.jpeg')} style={styles.profileThumb} />
-            <View>
-              <Text style={styles.jobName}>{job.name}</Text>
-              <Text style={styles.jobRole}>{job.title}</Text>
+        <View style={styles.profileCard}>
+          <View style={styles.profileRow}>
+            <Image
+              source={require("../../assets/new.jpeg")}
+              style={styles.profilePic}
+            />
+            <View style={{ marginLeft: 10 }}>
+              <Text style={styles.name}>{profile?.name}</Text>
+              <Text style={styles.role}>Plumber, San Francisco</Text>
+              <Text style={styles.rating}>4.8 (123 reviews)</Text>
             </View>
-            <Text style={styles.dayLabel}>{job.day}</Text>
+            <View style={styles.statusDot} />
+            <Text style={styles.onlineText}>online</Text>
+          </View>
+          <TouchableOpacity style={styles.editProfileBtn}>
+            <Text style={styles.editProfileText}>Edit Profile</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.statsContainer}>
+          <View style={styles.statCard}>
+            <Ionicons name="checkmark-done" size={20} color="#333" />
+            <Text style={styles.statValue}>27</Text>
+            <Text style={styles.statLabel}>Completed Jobs</Text>
+          </View>
+          <View style={styles.statCard}>
+            <FontAwesome name="dollar" size={20} color="#333" />
+            <Text style={styles.statValue}>$1,240</Text>
+            <Text style={styles.statLabel}>This Month</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Ionicons name="star" size={20} color="#f9b500" />
+            <Text style={styles.statValue}>4.8</Text>
+            <Text style={styles.statLabel}>Ratings</Text>
+          </View>
+          <View style={styles.statCard}>
+            <MaterialIcons
+              name="notifications-active"
+              size={20}
+              color="#00c851"
+            />
+            <Text style={styles.statValue}>92%</Text>
+            <Text style={styles.statLabel}>Response Rate</Text>
+          </View>
+        </View>
+
+        <Text style={styles.sectionTitle}>Pending Request</Text>
+        <View style={styles.requestCard}>
+          <View style={styles.cardHeader}>
+            <Image
+              source={require("../../assets/new.jpeg")}
+              style={styles.profileThumb}
+            />
+            <View>
+              <Text style={styles.jobName}>Micheal Randers</Text>
+              <Text style={styles.jobRole}>Plumber, Kotei</Text>
+            </View>
           </View>
           <View style={styles.timeRow}>
-            <Ionicons name="time-outline" size={16} color="#555" />
-            <Text style={styles.timeText}>{job.time}</Text>
+            <Ionicons name="calendar-outline" size={16} color="#555" />
+            <Text style={styles.timeText}>Thu, Mar 16</Text>
+            <Ionicons
+              name="time-outline"
+              size={16}
+              color="#555"
+              style={{ marginLeft: 10 }}
+            />
+            <Text style={styles.timeText}>4:00 pm</Text>
           </View>
           <View style={styles.timeRow}>
             <Ionicons name="location-outline" size={16} color="#555" />
-            <Text style={styles.timeText}>{job.location}</Text>
+            <Text style={styles.timeText}>Ayeduase, 4.9km</Text>
           </View>
-          <TouchableOpacity style={styles.viewButton}>
-            <Text style={styles.viewText}>View Details</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity style={styles.acceptBtn}>
+              <Text style={styles.acceptText}>Accept</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.declineBtn}>
+              <Text style={styles.declineText}>Decline</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      ))}
+
+        <Text style={styles.sectionTitle}>Today’s Schedule</Text>
+        <View style={styles.confirmedCard}>
+          <Text style={styles.dateText}>Today, June 15</Text>
+          <View style={styles.cardHeader}>
+            <Image
+              source={require("../../assets/new.jpeg")}
+              style={styles.profileThumb}
+            />
+            <View>
+              <Text style={styles.jobName}>Nick John</Text>
+              <Text style={styles.jobRole}>Plumber, New Site</Text>
+            </View>
+          </View>
+          <View style={styles.timeRow}>
+            <Ionicons name="location-outline" size={16} color="#555" />
+            <Text style={styles.timeText}>Ayeduase, 4.9km</Text>
+          </View>
+          <View style={styles.confirmedRow}>
+            <Text style={styles.confirmedText}>• Confirmed</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewDetails}>View Details</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <Text style={styles.sectionTitle}>Upcoming Jobs</Text>
+        {upcomingJobs.map((job) => (
+          <View key={job.id} style={styles.requestCard}>
+            <View style={styles.cardHeader}>
+              <Image
+                source={require("../../assets/new.jpeg")}
+                style={styles.profileThumb}
+              />
+              <View>
+                <Text style={styles.jobName}>{job.name}</Text>
+                <Text style={styles.jobRole}>{job.title}</Text>
+              </View>
+              <Text style={styles.dayLabel}>{job.day}</Text>
+            </View>
+            <View style={styles.timeRow}>
+              <Ionicons name="time-outline" size={16} color="#555" />
+              <Text style={styles.timeText}>{job.time}</Text>
+            </View>
+            <View style={styles.timeRow}>
+              <Ionicons name="location-outline" size={16} color="#555" />
+              <Text style={styles.timeText}>{job.location}</Text>
+            </View>
+            <TouchableOpacity style={styles.viewButton}>
+              <Text style={styles.viewText}>View Details</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
@@ -176,9 +205,9 @@ useEffect(() => {
 export default ProviderJobsScreen;
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#f9f9f9'
+  container: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
   },
   topHeader: {
     backgroundColor: "#159D73",
@@ -241,90 +270,88 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   profileCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     borderRadius: 12,
     marginBottom: 10,
   },
   profileRow: {
-     flexDirection: 'row',
-      alignItems: 'center'
-     },
-  profilePic: { 
-    width: 50, 
-    height: 50, 
-    borderRadius: 25
-   },
-  name: { 
-    fontWeight: 'bold', 
-    fontSize: 16
-   },
-  role: { 
-    color: '#555'
-   },
-  rating: { 
-    olor: '#888' 
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profilePic: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  name: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  role: {
+    color: "#555",
+  },
+  rating: {
+    olor: "#888",
   },
   statusDot: {
     width: 8,
     height: 8,
-    backgroundColor: 'red',
+    backgroundColor: "red",
     borderRadius: 4,
-    marginLeft: 'auto',
+    marginLeft: "auto",
     marginRight: 5,
   },
-  onlineText: { color: 'red', 
-  fontSize: 12 
-},
+  onlineText: { color: "red", fontSize: 12 },
   editProfileBtn: {
     marginTop: 10,
-    backgroundColor: '#159D73',
+    backgroundColor: "#159D73",
     padding: 10,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  editProfileText: { 
-    color: '#fff', 
-    fontWeight: '600' 
+  editProfileText: {
+    color: "#fff",
+    fontWeight: "600",
   },
 
   statsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     marginVertical: 10,
   },
   statCard: {
-    width: '48%',
-    backgroundColor: '#fff',
+    width: "48%",
+    backgroundColor: "#fff",
     padding: 12,
     borderRadius: 10,
     marginVertical: 4,
   },
-  statValue: { 
-    fontWeight: 'bold', 
-    fontSize: 16 
+  statValue: {
+    fontWeight: "bold",
+    fontSize: 16,
   },
-  statLabel: { 
-    color: '#777' 
+  statLabel: {
+    color: "#777",
   },
 
-  sectionTitle: { 
-    fontWeight: 'bold', 
+  sectionTitle: {
+    fontWeight: "bold",
     fontSize: 18,
-     marginVertical: 10 
-    },
+    marginVertical: 10,
+  },
 
   requestCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 14,
     borderRadius: 10,
     marginBottom: 10,
   },
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   profileThumb: {
     width: 40,
@@ -332,62 +359,62 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
   },
-  jobName: { fontWeight: 'bold', fontSize: 16 },
-  jobRole: { color: '#666' },
-  timeRow: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
-  timeText: { marginLeft: 5, color: '#555' },
+  jobName: { fontWeight: "bold", fontSize: 16 },
+  jobRole: { color: "#666" },
+  timeRow: { flexDirection: "row", alignItems: "center", marginTop: 5 },
+  timeText: { marginLeft: 5, color: "#555" },
   buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 10,
   },
   acceptBtn: {
-    backgroundColor: '#159D73',
+    backgroundColor: "#159D73",
     padding: 10,
     borderRadius: 8,
     flex: 1,
     marginRight: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   declineBtn: {
-    backgroundColor: '#eee',
+    backgroundColor: "#eee",
     padding: 10,
     borderRadius: 8,
     flex: 1,
     marginLeft: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  acceptText: { color: '#fff', fontWeight: 'bold' },
-  declineText: { color: '#333', fontWeight: 'bold' },
+  acceptText: { color: "#fff", fontWeight: "bold" },
+  declineText: { color: "#333", fontWeight: "bold" },
   confirmedCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 14,
     borderRadius: 10,
     marginBottom: 10,
   },
-  dateText: { color: '#159D73', fontWeight: 'bold', marginBottom: 8 },
+  dateText: { color: "#159D73", fontWeight: "bold", marginBottom: 8 },
   confirmedRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  confirmedText: { color: '#159D73' },
-  viewDetails: { color: '#159D73', fontWeight: 'bold' },
+  confirmedText: { color: "#159D73" },
+  viewDetails: { color: "#159D73", fontWeight: "bold" },
   viewButton: {
     borderWidth: 1,
-    borderColor: '#159D73',
+    borderColor: "#159D73",
     padding: 10,
     borderRadius: 8,
     marginTop: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  viewText: { color: '#159D73', fontWeight: 'bold' },
+  viewText: { color: "#159D73", fontWeight: "bold" },
   dayLabel: {
-    backgroundColor: '#eee',
+    backgroundColor: "#eee",
     paddingHorizontal: 10,
     paddingVertical: 2,
     borderRadius: 10,
     fontSize: 12,
-    color: '#555',
+    color: "#555",
   },
 });

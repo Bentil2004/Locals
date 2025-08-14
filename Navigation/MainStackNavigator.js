@@ -11,6 +11,8 @@ import SignUp from "../app/screens/SignUp";
 import BottomTabNavigator from "./BottomTabNavigator";
 import ChatScreen from "../app/screens/client/ChatScreen";
 import ProviderBottomTabs from "./ProviderBottomTabs";
+import CategoryProvidersScreen from "../app/screens/client/CategoryProvidersScreen";
+import ProviderProfileScreen from "../app/screens/client/ProviderProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,8 +28,9 @@ const MainStackNavigator = () => {
             <Stack.Screen name="SignUp" component={SignUp} />   
             <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />  
             <Stack.Screen name="ChatScreen" component={ChatScreen} /> 
-            <Stack.Screen name="ProviderBottomTabs" component={ProviderBottomTabs} />   
-                   
+            <Stack.Screen name="ProviderBottomTabs" component={ProviderBottomTabs} />  
+            <Stack.Screen  name="CategoryProviders"  component={CategoryProvidersScreen}  options={({ route }) => ({ title: route.params.category.name + " Providers" })} /> 
+            <Stack.Screen name="ProviderProfile" component={ProviderProfileScreen} />      
           </Stack.Navigator>
         </NavigationContainer>
   );

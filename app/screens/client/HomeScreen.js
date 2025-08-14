@@ -7,19 +7,72 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ActivityIndicator
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useUserDetails } from "../../hooks/useUserDetails";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const { user, profile, loading, logout } = useUserDetails();
   const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
+  const [providers, setProviders] = useState([]);
+  const [loadingProviders, setLoadingProviders] = useState(true);
 
   useEffect(() => {
     if (profile?.avatar) {
       setProfileImage(profile.avatar);
     }
   }, [profile]);
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        setLoadingProviders(true);
+        const providersRef = collection(db, "users");
+        const q = query(providersRef, where("role", "==", "provider"));
+        
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const providersData = [];
+          querySnapshot.forEach((doc) => {
+            const providerData = doc.data();
+            providersData.push({
+              id: doc.id,
+              name: providerData.name,
+              avatar: providerData.avatar,
+              service: providerData.service || "Service Provider",
+              rating: providerData.rating || "4.8",
+              distance: providerData.distance || "0.8km"
+            });
+          });
+          setProviders(providersData);
+          setLoadingProviders(false);
+        });
+
+        return () => unsubscribe();
+
+      } catch (error) {
+        console.error("Error fetching providers:", error);
+        setLoadingProviders(false);
+      }
+    };
+
+    fetchProviders();
+  }, []);
+
+  const categories = [
+    { name: "Plumbing", icon: "🔧", id: "plumbing" },
+    { name: "Electrical", icon: "⚡", id: "electrical" },
+    { name: "Carpentry", icon: "🔨", id: "carpentry" },
+    { name: "Tailoring", icon: "✂️", id: "tailoring" },
+    { name: "Painting", icon: "🖌️", id: "painting" },
+    { name: "Others", icon: "🚚", id: "others" },
+  ];
+
+  const handleCategoryPress = (category) => {
+    navigation.navigate('CategoryProviders', { category });
+  };
 
   return (
     <View style={styles.container}>
@@ -45,20 +98,14 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Categories</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>See All</Text>
-            </TouchableOpacity>
           </View>
           <View style={styles.categoriesContainer}>
-            {[
-              { name: "Plumbing", icon: "🔧" },
-              { name: "Electrical", icon: "⚡" },
-              { name: "Carpentry", icon: "🔨" },
-              { name: "Tailoring", icon: "✂️" },
-              { name: "Painting", icon: "🖌️" },
-              { name: "Others", icon: "🚚" },
-            ].map((item, index) => (
-              <TouchableOpacity key={index} style={styles.categoryItem}>
+            {categories.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.categoryItem}
+                onPress={() => handleCategoryPress(item)}
+              >
                 <Text style={styles.categoryIcon}>{item.icon}</Text>
                 <Text style={styles.categoryText}>{item.name}</Text>
               </TouchableOpacity>
@@ -69,39 +116,49 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Nearby Providers</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('AllProviders')}>
               <Text style={styles.seeAllText}>See All</Text>
             </TouchableOpacity>
           </View>
 
-          {[
-            {
-              name: "Maria Goodson",
-              service: "Tailor",
-              image: "https://i.pravatar.cc/150?img=32",
-            },
-            {
-              name: "Saul Goodman",
-              service: "Electrician",
-              image: "https://i.pravatar.cc/150?img=44",
-            },
-          ].map((provider, index) => (
-            <View key={index} style={styles.providerCard}>
-              <Image source={{ uri: provider.image }} style={styles.avatar} />
-              <View style={styles.providerDetails}>
-                <Text style={styles.providerName}>{provider.name}</Text>
-                <Text style={styles.providerService}>{provider.service}</Text>
-                <View style={styles.ratingContainer}>
-                  <Ionicons name="star" size={16} color="#FFD700" />
-                  <Text style={styles.ratingText}>4.8</Text>
+          {loadingProviders ? (
+            <ActivityIndicator size="large" color="#159D73" />
+          ) : providers.length === 0 ? (
+            <Text style={styles.noProvidersText}>No providers available</Text>
+          ) : (
+            providers.map((provider, index) => (
+              <View key={index} style={styles.providerCard}>
+                <Image 
+                  source={{ uri: provider.avatar || "https://i.pravatar.cc/150" }} 
+                  style={styles.avatar} 
+                />
+                <View style={styles.providerDetails}>
+                  <Text style={styles.providerName}>{provider.name}</Text>
+                  <Text style={styles.providerService}>{provider.service}</Text>
+                  <View style={styles.ratingContainer}>
+                    <Ionicons name="star" size={16} color="#FFD700" />
+                    <Text style={styles.ratingText}>{provider.rating}</Text>
+                  </View>
+                  <Text style={styles.distanceText}>📍 {provider.distance} away</Text>
                 </View>
-                <Text style={styles.distanceText}>📍 0.8km away</Text>
+                <TouchableOpacity 
+                  style={styles.viewProfileButton}
+                  onPress={() => navigation.navigate('ProviderProfile', { 
+                    provider: {
+                      id: provider.id,
+                      name: provider.name,
+                      service: provider.service,
+                      avatar: provider.avatar,
+                      phone: provider.phone,
+                      email: provider.email
+                    }
+                  })}
+                >
+                  <Text style={styles.viewProfileText}>View Profile</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.viewProfileButton}>
-                <Text style={styles.viewProfileText}>View Profile</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
+            ))
+          )}
         </View>
       </ScrollView>
     </View>
@@ -213,19 +270,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   viewProfileText: { color: "#fff", fontWeight: "500" },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingVertical: 10,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#E0E0E0",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
+  noProvidersText: {
+    textAlign: 'center',
+    marginVertical: 20,
+    color: '#666',
   },
-  navItem: { alignItems: "center" },
-  navText: { fontSize: 12, marginTop: 5, color: "#999" },
 });

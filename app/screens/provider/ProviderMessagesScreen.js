@@ -64,8 +64,8 @@ const ProviderMessagesScreen = () => {
             <StatusBar barStyle="light-content" backgroundColor="#159D73" />
       <View style={styles.topHeader}>
         <View>
-          <Text style={styles.greeting}>Hello, {profile?.name}</Text>
-          <Text style={styles.welcome}>Welcome Back!</Text>
+          <Text style={styles.greeting}>Message Screen</Text>
+          <Text style={styles.welcome}>Your recent messages appear here</Text>
         </View>
         <Image
           source={{ uri: profileImage }}

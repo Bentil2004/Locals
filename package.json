@@ -12,6 +12,8 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/checkbox": "^0.5.20",
+    "@react-native-firebase/app": "^23.0.1",
+    "@react-native-firebase/firestore": "^23.0.1",
     "@react-navigation/bottom-tabs": "^7.4.2",
     "@react-navigation/native-stack": "^7.3.14",
     "axios": "^1.11.0",

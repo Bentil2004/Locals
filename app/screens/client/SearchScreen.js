@@ -20,8 +20,8 @@ const SearchScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.welcomeText}>Hello, {profile?.name}</Text>
-          <Text style={styles.welcomeSubtext}>Welcome Back!</Text>
+          <Text style={styles.welcomeText}>Search Screen</Text>
+          <Text style={styles.welcomeSubtext}>Search for service providers</Text>
         </View>
         <Image
           source={{ uri: profileImage}}
