@@ -122,7 +122,7 @@ export default function HomeScreen({ navigation }) {
           </View>
 
           {loadingProviders ? (
-            <ActivityIndicator size="large" color="#159D73" />
+            <ActivityIndicator size="medium" color="#159D73" />
           ) : providers.length === 0 ? (
             <Text style={styles.noProvidersText}>No providers available</Text>
           ) : (

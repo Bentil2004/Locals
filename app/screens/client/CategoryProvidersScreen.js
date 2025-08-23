@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,66 +6,58 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ActivityIndicator
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-
-const allProviders = [
-  {
-    name: "Maria Goodson",
-    service: "Tailor",
-    category: "tailoring",
-    image: "https://i.pravatar.cc/150?img=32",
-    rating: 4.8,
-    distance: 0.8,
-  },
-  {
-    name: "Saul Goodman",
-    service: "Electrician",
-    category: "electrical",
-    image: "https://i.pravatar.cc/150?img=44",
-    rating: 4.5,
-    distance: 1.2,
-  },
-  {
-    name: "John Smith",
-    service: "Plumber",
-    category: "plumbing",
-    image: "https://i.pravatar.cc/150?img=45",
-    rating: 4.7,
-    distance: 0.5,
-  },
-  {
-    name: "Mike Johnson",
-    service: "Carpenter",
-    category: "carpentry",
-    image: "https://i.pravatar.cc/150?img=46",
-    rating: 4.9,
-    distance: 1.5,
-  },
-    {
-        name: "Sarah Connor",
-        service: "Gardener",
-        category: "others",
-        image: "https://i.pravatar.cc/150?img=47",
-        rating: 4.6,
-        distance: 0.9,
-    },
-    {
-        name: "Emily Davis",
-        service: "House Cleaner",
-        category: "others",
-        image: "https://i.pravatar.cc/150?img=48",
-        rating: 4.4,
-        distance: 1.0,
-    },
-];
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 export default function CategoryProvidersScreen({ route, navigation }) {
   const { category } = route.params;
-  const filteredProviders = allProviders.filter(
-    (provider) => provider.category === category.id
-  );
+  const [providers, setProviders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategoryProviders = async () => {
+      try {
+        setLoading(true);
+        const providersRef = collection(db, "users");
+        const q = query(
+          providersRef, 
+          where("role", "==", "provider"),
+          where("serviceCategory", "==", category.id)
+        );
+        
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const providersData = [];
+          querySnapshot.forEach((doc) => {
+            const providerData = doc.data();
+            providersData.push({
+              id: doc.id,
+              name: providerData.name,
+              avatar: providerData.avatar || "https://i.pravatar.cc/150",
+              service: providerData.service || "Service Provider",
+              rating: providerData.rating || "4.8",
+              distance: providerData.distance || "0.8km",
+              phone: providerData.phone || "",
+              email: providerData.email || ""
+            });
+          });
+          setProviders(providersData);
+          setLoading(false);
+        });
+
+        return () => unsubscribe();
+
+      } catch (error) {
+        console.error("Error fetching category providers:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchCategoryProviders();
+  }, [category.id]);
 
   return (
     <View style={styles.container}>
@@ -78,10 +70,12 @@ export default function CategoryProvidersScreen({ route, navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {filteredProviders.length > 0 ? (
-          filteredProviders.map((provider, index) => (
+        {loading ? (
+          <ActivityIndicator size="medium" color="#159D73" style={styles.loader} />
+        ) : providers.length > 0 ? (
+          providers.map((provider, index) => (
             <View key={index} style={styles.providerCard}>
-              <Image source={{ uri: provider.image }} style={styles.avatar} />
+              <Image source={{ uri: provider.avatar }} style={styles.avatar} />
               <View style={styles.providerDetails}>
                 <Text style={styles.providerName}>{provider.name}</Text>
                 <Text style={styles.providerService}>{provider.service}</Text>
@@ -90,16 +84,28 @@ export default function CategoryProvidersScreen({ route, navigation }) {
                   <Text style={styles.ratingText}>{provider.rating}</Text>
                 </View>
                 <Text style={styles.distanceText}>
-                  📍 {provider.distance}km away
+                  📍 {provider.distance} away
                 </Text>
               </View>
-              <TouchableOpacity style={styles.viewProfileButton}>
+              <TouchableOpacity 
+                style={styles.viewProfileButton}
+                onPress={() => navigation.navigate('ProviderProfile', { 
+                  provider: {
+                    id: provider.id,
+                    name: provider.name,
+                    service: provider.service,
+                    avatar: provider.avatar,
+                    phone: provider.phone,
+                    email: provider.email
+                  }
+                })}
+              >
                 <Text style={styles.viewProfileText}>View Profile</Text>
               </TouchableOpacity>
             </View>
           ))
         ) : (
-            <View style={styles.noProvidersContainer}>
+          <View style={styles.noProvidersContainer}>
             <MaterialIcons name="search-off" size={50} color="#999" />
             <Text style={styles.noProvidersText}>
               No providers found for {category.name}
@@ -182,4 +188,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 14,
   },
+  loader: {
+    marginVertical: 20,
+  }
 });

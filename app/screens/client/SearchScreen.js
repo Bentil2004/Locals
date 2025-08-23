@@ -1,20 +1,112 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
-import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useUserDetails } from "../../hooks/useUserDetails";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
+import debounce from 'lodash.debounce';
 
 const SearchScreen = () => {
   const navigation = useNavigation();
   const { user, profile, loading, logout } = useUserDetails();
   const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/300");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [providers, setProviders] = useState([]);
+  const [filteredProviders, setFilteredProviders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const categories = ['All', 'Plumbing', 'Electrical', 'Carpentry', 'Tailoring', 'Painting', 'Others'];
 
   useEffect(() => {
     if (profile?.avatar) {
       setProfileImage(profile.avatar);
     }
   }, [profile?.avatar]);
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        setIsLoading(true);
+        const providersRef = collection(db, "users");
+        const q = query(
+          providersRef, 
+          where("role", "==", "provider"),
+        );
+        
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const providersData = [];
+          querySnapshot.forEach((doc) => {
+            const providerData = doc.data();
+            providersData.push({
+              id: doc.id,
+              name: providerData.name,
+              avatar: providerData.avatar || "https://i.pravatar.cc/150",
+              service: providerData.service || "Service Provider",
+              serviceCategory: providerData.serviceCategory || "others",
+              rating: providerData.rating || "4.8",
+              distance: providerData.distance || "0.8km",
+              phone: providerData.phone || "",
+              email: providerData.email || ""
+            });
+          });
+          setProviders(providersData);
+          setFilteredProviders(providersData);
+          setIsLoading(false);
+        });
+
+        return () => unsubscribe();
+
+      } catch (error) {
+        console.error("Error fetching providers:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchProviders();
+  }, []);
+
+  const debouncedSearch = useCallback(
+    debounce((query, category, providersList) => {
+      let filtered = providersList;
+
+      if (category !== "All") {
+        filtered = filtered.filter(provider => 
+          provider.serviceCategory?.toLowerCase() === category.toLowerCase()
+        );
+      }
+
+      if (query && query.trim() !== "") {
+        const searchTerm = query.toLowerCase().trim();
+        filtered = filtered.filter(provider => 
+          provider.name?.toLowerCase().includes(searchTerm) || 
+          provider.service?.toLowerCase().includes(searchTerm) ||
+          provider.serviceCategory?.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      setFilteredProviders(filtered);
+    }, 300),
+    []
+  );
+
+  useEffect(() => {
+    debouncedSearch(searchQuery, selectedCategory, providers);
+  }, [searchQuery, selectedCategory, providers, debouncedSearch]);
+
+  const handleCategoryPress = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const handleSearchChange = (text) => {
+    setSearchQuery(text);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+  };
 
   return (
     <View style={styles.container}>
@@ -36,7 +128,16 @@ const SearchScreen = () => {
             placeholder="Search for services and providers"
             placeholderTextColor="#999"
             style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={handleSearchChange}
+            returnKeyType="search"
+            // clearButtonMode="while-editing"
           />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+              <Ionicons name="close-circle" size={20} color="#999" />
+            </TouchableOpacity>
+          )}
         </View>
 
         <ScrollView 
@@ -44,97 +145,102 @@ const SearchScreen = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoriesContainer}
         >
-          {['Plumbing', 'Electrician', 'Carpentry', 'Tailor'].map((category, index) => (
-            <TouchableOpacity key={index} style={styles.categoryItem}>
-              <Text style={styles.categoryText}>{category}</Text>
+          {categories.map((category, index) => (
+            <TouchableOpacity 
+              key={index} 
+              style={[
+                styles.categoryItem,
+                selectedCategory === category && styles.selectedCategoryItem
+              ]}
+              onPress={() => handleCategoryPress(category)}
+            >
+              <Text style={[
+                styles.categoryText,
+                selectedCategory === category && styles.selectedCategoryText
+              ]}>
+                {category}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        <Text style={styles.resultsText}>Showing 2 results</Text>
+        {isLoading ? (
+          <ActivityIndicator size="medium" color="#159D73" style={styles.loader} />
+        ) : (
+          <>
+            <Text style={styles.resultsText}>
+              Showing {filteredProviders.length} result{filteredProviders.length !== 1 ? 's' : ''}
+              {searchQuery ? ` for "${searchQuery}"` : ''}
+              {selectedCategory !== "All" ? ` in ${selectedCategory}` : ''}
+            </Text>
 
-        <View style={styles.providerCard}>
-          <View style={styles.providerInfo}>
-            <Image
-              source={{ uri: "https://i.pravatar.cc/150?img=31" }}
-              style={styles.avatar}
-            />
-            <View style={styles.providerDetails}>
-              <Text style={styles.providerName}>Maria Goodson</Text>
-              <Text style={styles.providerService}>Tailor</Text>
-              <Text style={styles.providerDistance}>0.8km away</Text>
-            </View>
-          </View>
-          <View style={styles.actionButtons}>
-            <TouchableOpacity 
-              style={styles.messageButton}
-              onPress={() => navigation.navigate('ChatScreen', { 
-                providerName: 'Maria Goodson',
-                providerService: 'Tailor',
-                providerImage: { uri: "https://i.pravatar.cc/150?img=31" }
-              })}
-            >
-              <Text style={styles.messageButtonText}>Message</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.bookButton}
-              onPress={() => {
-                navigation.navigate('BottomTabNavigator', { 
-                  screen: 'Booking',
-                  params: {
-                    providerName: 'Maria Goodson',
-                    providerService: 'Tailor',
-                    providerImage: { uri: "https://i.pravatar.cc/150?img=31" }
-                  }
-                });
-              }}
-            >
-              <Text style={styles.bookButtonText}>Book Now</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.providerCard}>
-          <View style={styles.providerInfo}>
-            <Image
-              source={{ uri: "https://i.pravatar.cc/150?img=45" }}
-              style={styles.avatar}
-            />
-            <View style={styles.providerDetails}>
-              <Text style={styles.providerName}>Saul Goodman</Text>
-              <Text style={styles.providerService}>Electrician</Text>
-              <Text style={styles.providerDistance}>0.8km away</Text>
-            </View>
-          </View>
-          <View style={styles.actionButtons}>
-            <TouchableOpacity 
-              style={styles.messageButton}
-              onPress={() => navigation.navigate('ChatScreen', { 
-                providerName: 'Saul Goodman',
-                providerService: 'Electrician',
-                providerImage: { uri: "https://i.pravatar.cc/150?img=45" }
-              })}
-            >
-              <Text style={styles.messageButtonText}>Message</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.bookButton}
-              onPress={() => {
-                navigation.navigate('BottomTabNavigator', { 
-                  screen: 'Booking',
-                  params: {
-                    providerName: 'Maria Goodson',
-                    providerService: 'Tailor',
-                    providerImage: { uri: "https://i.pravatar.cc/150?img=45" }
-                  }
-                });
-              }}
-              
-            >
-              <Text style={styles.bookButtonText}>Book Now</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+            {filteredProviders.length === 0 ? (
+              <View style={styles.noResultsContainer}>
+                <Ionicons name="search-off" size={50} color="#999" />
+                <Text style={styles.noResultsText}>No providers found</Text>
+                <Text style={styles.noResultsSubtext}>
+                  {searchQuery || selectedCategory !== "All" 
+                    ? "Try a different search term or category" 
+                    : "No service providers available at the moment"}
+                </Text>
+              </View>
+            ) : (
+              filteredProviders.map((provider, index) => (
+                <View key={index} style={styles.providerCard}>
+                  <View style={styles.providerInfo}>
+                    <Image
+                      source={{ uri: provider.avatar }}
+                      style={styles.avatar}
+                    />
+                    <View style={styles.providerDetails}>
+                      <Text style={styles.providerName}>{provider.name}</Text>
+                      <Text style={styles.providerService}>{provider.service}</Text>
+                      <View style={styles.ratingContainer}>
+                        <Ionicons name="star" size={16} color="#FFD700" />
+                        <Text style={styles.ratingText}>{provider.rating}</Text>
+                      </View>
+                      <Text style={styles.providerDistance}>{provider.distance} away</Text>
+                    </View>
+                  </View>
+                  <View style={styles.actionButtons}>
+                    <TouchableOpacity 
+                      style={styles.messageButton}
+                      onPress={() => navigation.navigate('ChatScreen', { 
+                        providerId: provider.id,
+                        providerName: provider.name,
+                        providerService: provider.service,
+                        providerImage: provider.avatar
+                      })}
+                    >
+                      <Text style={styles.messageButtonText}>Message</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={styles.bookButton}
+                      onPress={() => {
+                        navigation.navigate('ProviderProfile',{
+                          providerId: provider.id,
+                          provider: {
+                            id: provider.id,
+                            name: provider.name,
+                            service: provider.service,
+                            avatar: provider.avatar,
+                            phone: provider.phone,
+                            email: provider.email,
+                            rating: provider.rating,
+                            distance: provider.distance,
+                            serviceCategory: provider.serviceCategory
+                          }
+                        });
+                      }}
+                    >
+                      <Text style={styles.bookButtonText}>Book Now</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))
+            )}
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -193,6 +299,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  clearButton: {
+    padding: 5,
+  },
   categoriesContainer: {
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -206,9 +315,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E0E0E0',
   },
+  selectedCategoryItem: {
+    backgroundColor: '#159D73',
+    borderColor: '#159D73',
+  },
   categoryText: {
     color: '#444',
     fontSize: 14,
+  },
+  selectedCategoryText: {
+    color: '#fff',
+    fontWeight: '600',
   },
   resultsText: {
     paddingHorizontal: 20,
@@ -248,9 +365,19 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   providerService: {
-    color: '#666',
+    color: '#0496FF',
     fontSize: 14,
     marginBottom: 3,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 3,
+  },
+  ratingText: {
+    marginLeft: 5,
+    color: '#666',
+    fontSize: 14,
   },
   providerDistance: {
     color: '#666',
@@ -285,6 +412,26 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontWeight: '500',
+  },
+  loader: {
+    marginVertical: 40,
+  },
+  noResultsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+  },
+  noResultsText: {
+    fontSize: 18,
+    color: '#666',
+    marginTop: 15,
+    fontWeight: '500',
+  },
+  noResultsSubtext: {
+    fontSize: 14,
+    color: '#999',
+    marginTop: 5,
+    textAlign: 'center',
   },
 });
 
